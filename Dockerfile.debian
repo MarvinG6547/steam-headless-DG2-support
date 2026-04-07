@@ -5,7 +5,7 @@ LABEL maintainer="Josh.5 <jsunnex@gmail.com>"
 ARG DEBIAN_FRONTEND=noninteractive
 RUN \
     echo "**** Update apt database ****" \
-        && sed -i '/^Components: main/ s/$/ contrib non-free/' /etc/apt/sources.list.d/debian.sources \
+        && sed -i '/^Components: main/ s/$/ contrib non-free non-free-firmware/' /etc/apt/sources.list.d/debian.sources \
     && \
     echo
 
@@ -53,6 +53,9 @@ RUN \
             /tmp/* \
     && \
     echo
+
+#Include DG2 firmware files
+COPY /firmware/i915/ /lib/firmware/i915/
 
 # Install core packages
 RUN \
@@ -104,6 +107,21 @@ RUN \
             /tmp/* \
     && \
     echo
+
+# Install Vulkan and VAAPI
+RUN apt-get update && apt-get install -y \
+    mesa-vulkan-drivers \
+    vulkan-utils \
+    clinfo \
+    libva-drm2 \
+    vainfo \
+    mesa-utils \
+    intel-media-va-driver-non-free \
+    intel-opencl-icd
+
+# Enable DRI
+ENV LIBVA_DRIVER_NAME=iHD
+ENV MESA_LOADER_DRIVER_OVERRIDE=i915
 
 # Configure default user and set user env
 ENV \
@@ -586,6 +604,3 @@ EXPOSE 8083
 # Set entrypoint
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
-#Include DG2 firmware file
-COPY /firmware/i915/ /lib/firmware/i915/
