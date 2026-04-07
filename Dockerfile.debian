@@ -588,4 +588,4 @@ RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 #Include DG2 firmware file
-COPY /lib/firmware/i915/ /lib/firmware/i915/
+COPY /firmware/i915/ /lib/firmware/i915/
